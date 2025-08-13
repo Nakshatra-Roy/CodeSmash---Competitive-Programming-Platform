@@ -2,7 +2,6 @@
 
 Welcome to **CodeSmash** – a sleek, full-stack web application for competitive programming enthusiasts. Solve problems, view past submissions, compete in contests, and sharpen your coding skills all in one place.
 
-![CodeSmash Banner](./screenshots/banner.png) <!-- Replace with your actual banner image path -->
 
 ---
 
@@ -36,7 +35,7 @@ Welcome to **CodeSmash** – a sleek, full-stack web application for competitive
 **Frontend**
 - React.js (Vite)
 - React Router
-- Custom CSS Modules (Light Green Glass UI)
+- Custom CSS Modules
 - Axios
 
 **Backend**
@@ -45,7 +44,7 @@ Welcome to **CodeSmash** – a sleek, full-stack web application for competitive
 - RESTful API Design
 
 **Utilities**
-- Monaco Editor / Custom Textarea (Configurable)
+- Custom Textarea (Configurable)
 - JWT for Auth
 - dotenv for config
 
@@ -75,34 +74,18 @@ cp .env.example .env
 
 # Start both client and server
 npm run start
+
 🌐 Environment Variables
+
 Create a .env file in the root and include:
 
-env
-Copy
-Edit
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 PORT=5000
-📁 Project Structure
-bash
-Copy
-Edit
-codesmash/
-│
-├── backend/               # Express + MongoDB API
-│   ├── models/            # User, Problem, Submission schemas
-│   └── routes/            # API endpoints
-│
-├── frontend/              # React frontend (Vite)
-│   ├── pages/             # Problems, Contests, Submission views
-│   ├── components/        # CustomDropdown, Editor, Navbar etc.
-│   └── Landing.css        # Main styling file
-│
-├── .env.example           # Sample env file
-├── package.json
-└── README.md
+
+
 🧑‍💻 Contribution Guide
+
 Contributions are welcome! Here's how to get started:
 
 Fork the repository
@@ -116,8 +99,8 @@ Commit and push (git commit -m "Add feature" && git push origin feature/your-fea
 Open a Pull Request!
 
 ❓ FAQ
-Q: Can I switch from the custom textarea to Monaco or CodeMirror?
-A: Yes! The editor is pluggable — use Monaco when stable, or stick to the current text-based version for reliability.
+Q: Does the custom text area autosave my code?
+A: Yes! The editor is auto saving, and always returnable.
 
 Q: Are contests live and timed?
 A: Not yet — but the system supports problem grouping by contest, and the timer UI is in progress.
