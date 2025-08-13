@@ -1,0 +1,138 @@
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import "./Landing.css";
+
+const SubmissionView = () => {
+  const { id } = useParams();
+  const [submission, setSubmission] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchSubmission = async () => {
+      try {
+        const res = await fetch(`/api/submissions/${id}`);
+        if (!res.ok) throw new Error(`Fetch failed with status ${res.status}`);
+        const data = await res.json();
+        if (!cancelled) {
+          setSubmission(data);
+          setLoading(false);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err.message);
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchSubmission();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  if (loading) {
+    return <div className="card glass skeleton" style={{ height: 220 }} />;
+  }
+
+  if (error) {
+    return (
+      <div className="card glass">
+        <strong style={{ color: "#ef4444" }}>Error:</strong> {error}
+      </div>
+    );
+  }
+
+  if (!submission) return null;
+
+  return (
+    <div style={{ padding: "32px 0" }}>
+      <div className="section-head">
+        <h2>
+          Submission Report: <strong>{submission.id || submission._id}</strong>
+          <br/>  
+            <span className={`pill ${getVerdictColor(submission.verdict)}`}>{submission.verdict || "Pending"}
+            </span>
+        </h2>
+            <button className="btn tiny glossy primary" onClick={() => window.location.href = `/report/${submission._id}`}>📊 Report</button>
+            <button className="btn tiny glossy ghost">🛠️ Rejudge</button>
+
+        <Link to="/submissions" className="btn tiny ghost">← Back</Link>
+        
+      </div>
+
+      <div className="grid" style={{ gap: 16 }}>
+        
+        <div className="card glass">
+          <h3 className="card-title" style={{ marginBottom: 8 }}>
+  Problem: <strong>{submission.problem?.title || "Untitled Problem"}</strong>
+</h3>
+{submission.problem?._id && (
+  <Link to={`/problems/${submission.problem._id}`} className="btn glossy ghost" style={{ marginTop: 8 }}>
+    Open Problem →
+  </Link>
+)}
+
+          <p style={{ fontSize: 14, color: "var(--muted)" }}>
+            Submitted on: {new Date(submission.createdAt).toLocaleString()}
+          </p>
+        </div>
+
+        <div className="grid cols-2">
+          <div className="card glass">
+            <h4>Metadata</h4>
+            <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 6 }}>
+              ⌨️ Language: {submission.language}
+            </p>
+            <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 6 }}>
+              ⏱ Time: {submission.time || "N/A"} ms
+            </p>
+            <p style={{ fontSize: 14, color: "var(--muted)" }}>
+              💾 Memory: {submission.memory || "N/A"} KB
+            </p>
+          </div>
+
+          <div className="card glass">
+            <h4>Custom Input</h4>
+            <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>
+              {submission.stdin || "—"}
+            </pre>
+          </div>
+        </div>
+
+        <div className="card glass" style={{ overflow: "hidden" }}>
+          <h4>Source Code</h4>
+          <pre
+            style={{
+              margin: 0,
+              padding: "12px",
+              background: "rgba(255,255,255,0.02)",
+              color: "var(--text)",
+              fontFamily: "JetBrains Mono, monospace",
+              borderRadius: 8,
+              fontSize: 13,
+              whiteSpace: "pre-wrap",
+              border: "1px solid var(--border)",
+            }}
+          >
+            {submission.source}
+          </pre>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const getVerdictColor = (verdict) => {
+  if (!verdict) return "unknown";
+  const v = verdict.toLowerCase();
+  if (v.includes("accepted")) return "easy";
+  if (v.includes("wrong") || v.includes("error")) return "hard";
+  if (v.includes("time") || v.includes("memory")) return "medium";
+  return "unknown";
+};
+
+export default SubmissionView;

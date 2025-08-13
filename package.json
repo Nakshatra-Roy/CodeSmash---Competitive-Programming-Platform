@@ -1,0 +1,16 @@
+{
+  "name": "my-mern-app",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npx concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm start",
+    "client": "cd client && npm start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  },
+  "dependencies": {
+    "@monaco-editor/react": "^4.5.1",
+    "monaco-editor": "^0.52.2"
+  }
+}
