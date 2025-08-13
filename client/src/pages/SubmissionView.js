@@ -75,7 +75,6 @@ const SubmissionView = () => {
     Open Problem →
   </Link>
 )}
-
           <p style={{ fontSize: 14, color: "var(--muted)" }}>
             Submitted on: {new Date(submission.createdAt).toLocaleString()}
           </p>

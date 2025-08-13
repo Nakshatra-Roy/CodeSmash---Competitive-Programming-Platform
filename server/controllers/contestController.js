@@ -75,6 +75,7 @@ exports.updateContest = async (req, res) => {
   }
 }
 
+
 exports.deleteContest = async (req, res) => {
   const { id } = req.params;
   try {
