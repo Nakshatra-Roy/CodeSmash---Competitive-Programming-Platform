@@ -7,13 +7,14 @@ Welcome to **CodeSmash** – a sleek, full-stack web application for competitive
 
 ## 📸 Screenshots
 <img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/9bdef18b-6a42-4863-a035-33be275a6242" />
-<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/bee38118-61df-461a-9dbb-0b59cfc5bb93" />
-<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/0e241432-448e-4480-a40e-b4cb57436434" />
-<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/d4dd3c49-b678-4270-9858-7ef76dbc21f4" />
-<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/2b28a7d7-a166-4485-9e5e-efd0d787b993" />
+<img width="1917" height="910" alt="image" src="https://github.com/user-attachments/assets/5794a125-6ba3-4dcf-b001-5b4de33baf9b" />
+<img width="1918" height="907" alt="image" src="https://github.com/user-attachments/assets/c38cf5dd-595a-49ef-b327-a70409c384d5" />
+<img width="1917" height="907" alt="image" src="https://github.com/user-attachments/assets/64246199-576b-497f-806f-a8020c84f9aa" />
+<img width="1918" height="909" alt="image" src="https://github.com/user-attachments/assets/e6f3570d-2cb3-46e0-a1b9-1402c20a817e" />
 <img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/59e9021b-9986-4062-8045-2f03cf0a53fb" />
-<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/1289b802-a8c1-4104-a51b-5062f0ed246a" />
-<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/1ac9bed7-5331-4341-bfc1-4114618d8283" />
+<img width="1917" height="911" alt="image" src="https://github.com/user-attachments/assets/e6c8563d-895a-405c-84e2-a90e759f25b2" />
+<img width="1917" height="909" alt="image" src="https://github.com/user-attachments/assets/329ee6bf-e961-4661-a489-8093bf70e8fc" />
+<img width="1917" height="909" alt="image" src="https://github.com/user-attachments/assets/a76fe4cf-0e7f-4494-b1d1-3e355f7d7348" />
 
 
 ---
@@ -26,7 +27,7 @@ Welcome to **CodeSmash** – a sleek, full-stack web application for competitive
 - 🏆 **Contests** – Participate in contests and see live leaderboards.
 - 🔍 **Search & Filter** – Quickly find problems based on difficulty and tags.
 - 🌙 **Themed UI** – Minimalist green-on-light theme with clean glassmorphism.
-- 🔒 **Authentication** – Secure user login and profile tracking.
+- 🔒 **Authentication** – Secure, encrypted user login and profile tracking.
 
 ---
 
@@ -100,7 +101,7 @@ Open a Pull Request!
 
 ❓ FAQ
 Q: Does the custom text area autosave my code?
-A: Yes! The editor is auto saving, and always returnable.
+A: Yes! The editor is auto-saving, and always returnable.
 
 Q: Are contests live and timed?
 A: Not yet — but the system supports problem grouping by contest, and the timer UI is in progress.
@@ -109,6 +110,6 @@ A: Not yet — but the system supports problem grouping by contest, and the time
 This project is licensed under the MIT License.
 
 🤝 Credits
-Made with 💚 by Nakshatra Roy
+# Made with 💚 by Nakshatra Roy
 
 Feel free to ⭐ the repo and spread the word!
