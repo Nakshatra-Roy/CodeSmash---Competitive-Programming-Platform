@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import "./Problems.css";
+import { useAuth } from "../context/authContext";
+import toast, { Toaster } from "react-hot-toast";
 
 const ContestView = () => {
   const { id } = useParams();
   const [contest, setContest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState("");
+  const { user } = useAuth();
+
+  const isLoggedInAdmin = user && user.role === "admin";
 
   useEffect(() => { 
     fetch(`/api/contests/${id}`)
@@ -35,6 +39,10 @@ const ContestView = () => {
       } else if (contest.status === "Ongoing") {
         const diff = end - now;
         setTimeRemaining(diff > 0 ? formatDuration(diff) : "Contest has ended.");
+      } else if (contest.status === "Pending") {
+        setTimeRemaining("Contest waiting for admin approval...");
+      } else if (contest.status === "Rejected") {
+        setTimeRemaining("Contest has been rejected. Contact Support.");
       } else {
         setTimeRemaining("Contest has ended.");
       }
@@ -77,9 +85,16 @@ const ContestView = () => {
       </div>
 
       <div style={{ position: "relative", zIndex: 1, padding: "32px 16px", maxWidth: 960, margin: "0 auto" }}>
+        {isLoggedInAdmin && (
+        <Link to="/admin/contests" className="btn tiny ghost" style={{ marginBottom: 24 }}>
+          ← All Contests
+        </Link>
+        )}
+        {!isLoggedInAdmin && (
         <Link to="/contests" className="btn tiny ghost" style={{ marginBottom: 24 }}>
           ← All Contests
         </Link>
+        )}
 
         {/* Hero section */}
         <div className="card glass" style={{ padding: 24, textAlign: "center", marginBottom: 32 }}>
@@ -101,9 +116,117 @@ const ContestView = () => {
           <p style={{ fontSize: "1.1rem", color: "#f5b759", fontWeight: "600" }}>
             {timeRemaining}
           </p>
+
+            <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "16px" }}>
+              {isLoggedInAdmin && (contest.status == "Pending" || contest.status == "Rejected") && (
+              <button
+                className="btn glossy primary"
+                onClick={async () => {
+                  try {
+                    const res = await fetch(`/api/contests/${contest._id}`, {
+                      method: "PUT",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                      },
+                      body: JSON.stringify({ ...contest, status: "Upcoming" }),
+                    });
+                    if (!res.ok) throw new Error("Failed to approve contest");
+                    const { updatedContest } = await res.json();
+                    setContest(updatedContest);
+                    toast.success("Contest approved.");
+                  } catch (err) {
+                    toast.error(err.message);
+                  }
+                }}
+              >
+                ✅ Approve
+              </button>
+            )}
+
+            {isLoggedInAdmin && contest.status == "Ongoing" && (
+              <button
+                className="btn glossy danger"
+                onClick={async () => {
+                  try {
+                    const res = await fetch(`/api/contests/${contest._id}`, {
+                      method: "PUT",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                      },
+                      body: JSON.stringify({ ...contest, status: "Completed" }),
+                    });
+                    if (!res.ok) throw new Error("Failed to end contest.");
+                    const { updatedContest } = await res.json();
+                    setContest(updatedContest);
+                    toast.success("Contest ended.");
+                  } catch (err) {
+                    toast.error(err.message);
+                  }
+                }}
+              >
+                ❌ END
+              </button>
+            )}
+
+            {isLoggedInAdmin && (contest.status == "Rejected" || contest.status == "Upcoming") && (
+              <button
+                className="btn glossy primary"
+                onClick={async () => {
+                  try {
+                    const res = await fetch(`/api/contests/${contest._id}`, {
+                      method: "PUT",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                      },
+                      body: JSON.stringify({ ...contest, status: "Pending" }),
+                    });
+                    if (!res.ok) throw new Error("Failed to set contest to pending.");
+                    const { updatedContest } = await res.json();
+                    setContest(updatedContest);
+                    toast.success("Contest set to pending.");
+                  } catch (err) {
+                    toast.error(err.message);
+                  }
+                }}
+              >
+                ⚠️ Pending
+              </button>
+              )}
+
+            {isLoggedInAdmin && (contest.status == "Pending" || contest.status == "Upcoming")  && (
+              <button
+                className="btn glossy danger"
+                onClick={async () => {
+                  try {
+                    const res = await fetch(`/api/contests/${contest._id}`, {
+                      method: "PUT",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                      },
+                      body: JSON.stringify({ ...contest, status: "Rejected" }),
+                    });
+                    if (!res.ok) throw new Error("Failed to reject contest");
+                    const { updatedContest } = await res.json();
+                    setContest(updatedContest);
+                    toast.success("Contest rejected.");
+                  } catch (err) {
+                    toast.error(err.message);
+                  }
+                }}
+              >
+                ❌ Reject
+              </button>
+              )}
+            </div>
+          
+
+
         </div>
 
-        {/* Banner */}
         <img
           src={contest.banner || "https://placehold.co/800x200?text=Contest+Banner"}
           alt="Contest Banner"
@@ -116,15 +239,14 @@ const ContestView = () => {
           }}
         />
 
-        {/* Description and details */}
         <div className="card glass" style={{ padding: 24 }}>
           <div className="popover-desc" style={{ marginBottom: 24 }}>
             <strong>Description:</strong>
            <div className="description">
-  {contest.description.split("\n").map((line, index) => (
-    <p key={index}>{line}</p>
-  ))}
-</div>
+            {contest.description.split("\n").map((line, index) => (
+              <p key={index}>{line}</p>
+            ))}
+          </div>
 
 
 
@@ -167,6 +289,7 @@ const ContestView = () => {
           )}
         </div>
       </div>
+      <Toaster position="bottom-right" reverseOrder={false} />
     </div>
   );
 };

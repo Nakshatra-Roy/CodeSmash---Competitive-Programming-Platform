@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CustomDropdown from "./CustomDropdown";
-import "./Landing.css";
+import toast, { Toaster } from "react-hot-toast";
+import { useAuth } from "../context/authContext";
 
 const LANGUAGES = [
   { id: "cpp17", label: "C++17" },
@@ -156,6 +157,8 @@ const ProblemView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const { user } = useAuth();
+  const isLoggedInAdmin = user && user.role === "admin";
 
   const [language, setLanguage] = useState(() => {
     const saved = localStorage.getItem(`lang:${id}`);
@@ -207,37 +210,64 @@ const ProblemView = () => {
   const handleSubmit = async () => {
     setSubmitting(true);
     setError(null);
+
     try {
       const res = await fetch(`/api/submissions`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
         body: JSON.stringify({
-          problemId: id,
+          problem: id,
           language,
           source: sourceCode,
           stdin: customInput || undefined,
         }),
+        credentials: "include",
       });
-      if (!res.ok) throw new Error(`Submit failed (${res.status})`);
-      const data = await res.json();
+
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
+
+      if (!res.ok) {
+        const msg = data?.error || data?.message || `Submit failed (${res.status})`;
+        throw new Error(msg);
+      }
+
       const sid = data._id || data.id || "";
-      navigate(`/submissions?highlight=${sid}`);
-    } catch (e) {
-      setError(e.message);
+      toast.success("Code submitted successfully!");
+      navigate(`/submissions/${sid}`);
+
+    } catch (err) {
+      // Show toast with full error
+      toast.error(`Submission failed: ${err.message}`);
     } finally {
       setSubmitting(false);
     }
   };
 
+
   const handleReset = () => {
+    const confirmReset = window.confirm(
+      "⚠️ Are you sure you want to reset the code? Your changes will be lost."
+    );
+    if (!confirmReset) return;
+
     const tpl = DEFAULT_TEMPLATES[language] || "";
     setSourceCode(tpl);
     setDirty(true);
+    toast.success("Code successfully reset.")
   };
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(sourceCode || "");
+      toast.success("Code copied to clipboard.")
     } catch {}
   };
 
@@ -249,19 +279,99 @@ const ProblemView = () => {
           <span className={`pill ${problem?.difficulty?.toLowerCase?.() || ""}`}>
             {problem?.difficulty || "Loading…"}
           </span>
+          <span className={"badge code"}>
+            {`by ${problem?.author.name}` || "Loading…"}
+          </span>
+          {isLoggedInAdmin && (
+            <span className={"badge code"}>
+            {problem?.status|| "Loading…"}
+          </span>
+          )}
         </h2>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <CustomDropdown options={LANGUAGES} value={language} onChange={setLanguage} />
-                <button onClick={handleCopy} className="btn glossy ghost">Copy</button>
-                <button onClick={handleReset} className="btn glossy ghost">Reset</button>
-                <button
-                  onClick={handleSubmit}
-                  disabled={submitting}
-                  className="btn glossy primary"
-                >
-                  {submitting ? "Submitting…" : "🚀 Submit"}
-                </button>
-              </div>
+        
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "16px" }}>
+              {isLoggedInAdmin && (problem?.status == "Pending" || problem?.status == "Rejected") && (
+              <button
+                className="btn glossy primary"
+                onClick={async () => {
+                  try {
+                    const res = await fetch(`/api/problems/${problem._id}`, {
+                      method: "PUT",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                      },
+                      body: JSON.stringify({ status: "Approved" }),
+                    });
+                    if (!res.ok) throw new Error("Failed to approve problem.");
+                    const { updatedProblem } = await res.json();
+                    setProblem(updatedProblem);
+                    toast.success("Problem approved.");
+                  } catch (err) {
+                    toast.error(err.message);
+                  }
+                }}
+              >
+                ✅ Approve
+              </button>
+            )}
+
+            {isLoggedInAdmin && (problem?.status == "Rejected" || problem?.status == "Approved") && (
+              <button
+                className="btn glossy primary"
+                onClick={async () => {
+                  try {
+                    const res = await fetch(`/api/problems/${problem._id}`, {
+                      method: "PUT",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                      },
+                      body: JSON.stringify({ status: "Pending" }),
+                    });
+                    if (!res.ok) throw new Error("Failed to set problem to pending.");
+                    const { updatedProblem } = await res.json();
+                    setProblem(updatedProblem);
+                    toast.success("Problem set to pending.");
+                  } catch (err) {
+                    toast.error(err.message);
+                  }
+                }}
+              >
+                ⚠️ Pending
+              </button>
+              )}
+
+            {isLoggedInAdmin && (problem?.status == "Pending" || problem?.status == "Approved")  && (
+              <button
+                className="btn glossy danger"
+                onClick={async () => {
+                  try {
+                    const res = await fetch(`/api/problems/${problem._id}`, {
+                      method: "PUT",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                      },
+                      body: JSON.stringify({ status: "Rejected" }),
+                    });
+                    if (!res.ok) throw new Error("Failed to reject problem.");
+                    const { updatedProblem } = await res.json();
+                    setProblem(updatedProblem);
+                    toast.success("Problem rejected.");
+                  } catch (err) {
+                    toast.error(err.message);
+                  }
+                }}
+              >
+                ❌ Reject
+              </button>
+              )}
+            </div>
+
+      
+        </div>
       </div>
       
 
@@ -303,7 +413,24 @@ const ProblemView = () => {
           
         
           <div className="card glass">
-            <h4>Editor</h4>
+            <div className="section-head">
+            <h4>Editor</h4>    
+            {!isLoggedInAdmin && (
+              <div style={{ display: "flex", gap: "12px", justifyContent: "right", marginTop: "16px" }}>
+                <CustomDropdown options={LANGUAGES} value={language} onChange={setLanguage} />
+                <button onClick={handleCopy} className="btn glossy ghost">Copy</button>
+                <button onClick={handleReset} className="btn glossy ghost">Reset</button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="btn glossy primary"
+                >
+                  {submitting ? "Submitting…" : "🚀 Submit"}
+                </button>
+              
+              </div>
+            )}
+            </div>
             <textarea
               rows={20}
               value={sourceCode}
@@ -355,6 +482,7 @@ const ProblemView = () => {
           </div>
         </div>
       )}
+      <Toaster position="bottom-right" reverseOrder={false} />
     </div>
   );
 };

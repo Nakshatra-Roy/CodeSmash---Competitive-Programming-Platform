@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import "./Landing.css";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
+import { useAuth } from "../context/authContext";
 
 const SubmissionView = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+
   const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,22 +34,39 @@ const SubmissionView = () => {
     };
 
     fetchSubmission();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [id]);
 
-  if (loading) {
-    return <div className="card glass skeleton" style={{ height: 220 }} />;
-  }
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this submission? ⚠️ This cannot be undone.")) return;
 
-  if (error) {
-    return (
-      <div className="card glass">
-        <strong style={{ color: "#ef4444" }}>Error:</strong> {error}
-      </div>
-    );
-  }
+    try {
+      const res = await fetch(`/api/submissions/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data?.message || `Delete failed (${res.status})`);
+
+      toast.success("Submission deleted successfully.");
+      navigate("/submissions");
+    } catch (err) {
+      toast.error(`Failed to delete: ${err.message}`);
+    }
+  };
+
+  if (loading) return <div className="card glass skeleton" style={{ height: 220 }} />;
+
+  if (error) return (
+    <div className="card glass">
+      <strong style={{ color: "#ef4444" }}>Error:</strong> {error}
+    </div>
+  );
 
   if (!submission) return null;
 
@@ -53,28 +75,36 @@ const SubmissionView = () => {
       <div className="section-head">
         <h2>
           Submission Report: <strong>{submission.id || submission._id}</strong>
-          <br/>  
-            <span className={`pill ${getVerdictColor(submission.verdict)}`}>{submission.verdict || "Pending"}
-            </span>
+          <br />
+          <span className={`pill ${getVerdictColor(submission.verdict)}`}>{submission.verdict || "Pending"}</span>
         </h2>
-            <button className="btn tiny glossy primary" onClick={() => window.location.href = `/report/${submission._id}`}>📊 Report</button>
-            <button className="btn tiny glossy ghost">🛠️ Rejudge</button>
 
-        <Link to="/submissions" className="btn tiny ghost">← Back</Link>
-        
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+          <button className="btn tiny glossy primary" onClick={() => window.location.href = `/report/${submission._id}`}>
+            📊 Report
+          </button>
+          <button className="btn tiny glossy ghost">🛠️ Rejudge</button>
+
+          {isAdmin && (
+            <button className="btn glossy danger" onClick={handleDelete}>
+              🗑️ Delete
+            </button>
+          )}
+
+          <Link to="/submissions" className="btn tiny ghost">← Back</Link>
+        </div>
       </div>
 
       <div className="grid" style={{ gap: 16 }}>
-        
         <div className="card glass">
           <h3 className="card-title" style={{ marginBottom: 8 }}>
-  Problem: <strong>{submission.problem?.title || "Untitled Problem"}</strong>
-</h3>
-{submission.problem?._id && (
-  <Link to={`/problems/${submission.problem._id}`} className="btn glossy ghost" style={{ marginTop: 8 }}>
-    Open Problem →
-  </Link>
-)}
+            Problem: <strong>{submission.problem?.title || "Untitled Problem"}</strong>
+          </h3>
+          {submission.problem?._id && (
+            <Link to={`/problems/${submission.problem._id}`} className="btn glossy ghost" style={{ marginTop: 8 }}>
+              Open Problem →
+            </Link>
+          )}
           <p style={{ fontSize: 14, color: "var(--muted)" }}>
             Submitted on: {new Date(submission.createdAt).toLocaleString()}
           </p>
@@ -83,22 +113,14 @@ const SubmissionView = () => {
         <div className="grid cols-2">
           <div className="card glass">
             <h4>Metadata</h4>
-            <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 6 }}>
-              ⌨️ Language: {submission.language}
-            </p>
-            <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 6 }}>
-              ⏱ Time: {submission.time || "N/A"} ms
-            </p>
-            <p style={{ fontSize: 14, color: "var(--muted)" }}>
-              💾 Memory: {submission.memory || "N/A"} KB
-            </p>
+            <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 6 }}>⌨️ Language: {submission.language}</p>
+            <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 6 }}>⏱ Time: {submission.time || "N/A"} ms</p>
+            <p style={{ fontSize: 14, color: "var(--muted)" }}>💾 Memory: {submission.memory || "N/A"} KB</p>
           </div>
 
           <div className="card glass">
             <h4>Custom Input</h4>
-            <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>
-              {submission.stdin || "—"}
-            </pre>
+            <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{submission.stdin || "—"}</pre>
           </div>
         </div>
 
@@ -121,6 +143,8 @@ const SubmissionView = () => {
           </pre>
         </div>
       </div>
+
+      <Toaster position="bottom-right" reverseOrder={false} />
     </div>
   );
 };

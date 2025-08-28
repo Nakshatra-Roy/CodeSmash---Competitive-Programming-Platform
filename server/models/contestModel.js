@@ -8,11 +8,11 @@ const contestSchema = new mongoose.Schema({
   banner: { type: String, default: 'default-banner-url' , required: true },
   duration: { type: Number, required: true }, // in minutes
   organizer: { type: String, required: true },
-  authors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  problems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Problem' }],
-  status: { type: String, enum: ['Upcoming', 'Ongoing', 'Completed'], default: 'Upcoming' },
+  authors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }],
+  problems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Problem', required: true }],
+  status: { type: String, enum: ['Pending', 'Rejected', 'Upcoming', 'Ongoing', 'Completed'], default: 'Pending' },
   participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  tags: [String],
+  tags: [{type: String, required: true}],
   createdAt: { type: Date, default: Date.now }
 });
 

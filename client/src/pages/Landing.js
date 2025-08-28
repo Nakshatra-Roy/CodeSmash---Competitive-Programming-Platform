@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
-import "./Landing.css";
+import "./style.css";
 
 function useFetch(url, initial = []) {
   const [data, setData] = useState(initial);
@@ -200,17 +201,18 @@ function Landing() {
           </div>
         </div>
       </section>
+      <Toaster position="bottom-right" reverseOrder={false} />
 
       {/* Footer */}
       <footer className="footer">
         <div className="container">
           <div className="foot-inner">
-            <div className="brand">CODEVERSE</div>
+            <div className="brand">CODESMASH</div>
             <div className="muted">Code. Learn. Compete.</div>
           </div>
         </div>
       </footer>
-    </>
+      </>
   );
 }
 export default Landing;

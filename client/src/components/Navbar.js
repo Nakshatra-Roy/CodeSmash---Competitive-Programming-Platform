@@ -1,33 +1,27 @@
-// import React from "react";
-// import { Link } from "react-router-dom";
-
-// const Navbar = () => {
-//   return (
-//     <nav style={{
-//       padding: "1rem",
-//       backgroundColor: "#240053ff",
-//       color: "#fff",
-//       display: "flex",
-//       justifyContent: "justify-between",
-//       alignItems: "center"
-//     }}>
-//       <div>
-//         <Link to="/" style={{ marginRight: "1rem", color: "white" }}>🏠</Link>
-//         <Link to="/problems" style={{ marginRight: "1rem", color: "white" }}>📘 Problems</Link>
-//         <Link to="/submissions" style={{ marginRight: "1rem", color: "white" }}>📤 Submissions</Link>
-//         <Link to="/profile" style={{ color: "white" }}>👤</Link>
-//       </div>
-//     </nav>
-//   );
-// };
-
-// export default Navbar;
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/authContext";
+import toast, { Toaster } from 'react-hot-toast';
 
 const Navbar = () => {
   const { pathname } = useLocation();
-  const isActive = (to) => (pathname === to || pathname.startsWith(to + "/"));
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const isLoggedIn = user && user.role === "user";
+  const isLoggedInAdmin = user && user.role === "admin";
+
+  const isActive = (to) => pathname === to || pathname.startsWith(to + "/");
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Successfully logged out.");
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <nav
@@ -53,6 +47,7 @@ const Navbar = () => {
           gap: 12,
         }}
       >
+        {/* Brand + Nav Links */}
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Link
             to="/"
@@ -64,7 +59,7 @@ const Navbar = () => {
               fontWeight: 800,
               letterSpacing: ".3px",
               color: "#a78bfa",
-              textDecoration: "none" ,
+              textDecoration: "none",
               fontSize: "1.5rem",
               textTransform: "uppercase",
             }}
@@ -75,8 +70,7 @@ const Navbar = () => {
                 width: 28,
                 height: 28,
                 borderRadius: "10px",
-                background:
-                  "linear-gradient(135deg, #7c3aed, #22d3ee)",
+                background: "linear-gradient(135deg, #7c3aed, #22d3ee)",
                 boxShadow: "0 6px 16px rgba(34,211,238,0.25)",
                 display: "grid",
                 placeItems: "center",
@@ -86,39 +80,84 @@ const Navbar = () => {
             >
               ⚡
             </span>
-            CODE VERSE
+            CODE SMASH
+            {user?.role === "admin" && (
+              <span style={{ color: "red", fontWeight: "bold", marginLeft: 8 }}>
+                ADMIN
+              </span>
+            )}
           </Link>
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              marginLeft: 6,
-            }}
-          >
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: 6 }}>
+            {isLoggedInAdmin && (
+            <>
+            <NavLink to="/admin/contests" active={isActive("/admin/contests")}>
+              🏆 Contests
+            </NavLink>
+            <NavLink to="/admin/problems" active={isActive("/admin/problems")}>
+              📘 Problems
+            </NavLink>
+            </>
+            )}
+            {isLoggedIn && (
+            <>
             <NavLink to="/contests" active={isActive("/contests")}>
               🏆 Contests
             </NavLink>
             <NavLink to="/problems" active={isActive("/problems")}>
               📘 Problems
             </NavLink>
-            <NavLink to="/submissions" active={isActive("/submissions")}>
-              📤 Submissions
-            </NavLink>
-            <NavLink to="/profile" active={isActive("/profile")}>
-              👤 Profile
-            </NavLink>
+            </>
+            )}
+            {user && (
+              <NavLink to="/submissions" active={isActive("/submissions")}>
+                📤 Submissions
+              </NavLink>
+            )}
+
+            {isLoggedIn && (
+              <NavLink to="/profile" active={isActive("/profile")}>
+                👤 Profile
+              </NavLink>
+            )}
+            {isLoggedInAdmin && (
+              <NavLink to="/admin/users" active={isActive("/admin/users")}>
+                👥 Users
+              </NavLink>
+            )}
           </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <Link to="/problems" className="btn glossy ghost">
-            Explore
-          </Link>
-          <Link to="/profile" className="btn glossy primary">
-            Get started
-          </Link>
+          {!isLoggedIn && !isLoggedInAdmin && (
+            <>
+              <Link to="/login" className="btn glossy ghost">
+                Login
+              </Link>
+              <Link to="/register" className="btn glossy primary">
+                Get started
+              </Link>
+            </>
+          )}
+
+          {isLoggedIn && (
+            <>
+              <button onClick={handleLogout} className="btn glossy danger">
+                Logout
+              </button>
+            </>
+          )}
+
+          {isLoggedInAdmin && (
+            <>
+              <button onClick={handleLogout} className="btn glossy danger">
+                Logout
+              </button>
+              <Link to="/admin/dashboard" className="btn glossy primary">
+                Dashboard
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

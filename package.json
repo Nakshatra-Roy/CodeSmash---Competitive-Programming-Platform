@@ -11,6 +11,10 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.5.1",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "express-session": "^1.18.2",
+    "jsonwebtoken": "^9.0.2",
     "monaco-editor": "^0.52.2"
   }
 }

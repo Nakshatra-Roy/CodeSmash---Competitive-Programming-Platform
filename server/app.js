@@ -1,16 +1,32 @@
-const express = require('express');
-const cors = require('cors');
+// app.js
+import express from "express";
+import cors from "cors";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+
+dotenv.config();
+
 const app = express();
 
-app.use(cors());
+app.use(cookieParser());
+
+app.use(cors({
+  origin: process.env.CLIENT_URL || "http://localhost:3000",
+  credentials: true,
+}));
+
 app.use(express.json());
 
-const problemRoutes = require('./routes/problemRoutes');
-const contestRoutes = require('./routes/contestRoutes');
-const submissionRoutes = require('./routes/submissionRoutes');
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secretkey",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 86400000 },
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+  })
+);
 
-app.use('/api/problems', problemRoutes);
-app.use('/api/contests', contestRoutes);
-app.use('/api/submissions', submissionRoutes);
-
-module.exports = app;
+export default app;
