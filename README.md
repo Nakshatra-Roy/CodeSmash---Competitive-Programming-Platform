@@ -11,11 +11,11 @@ Welcome to **CodeSmash** – a sleek, full-stack web application for competitive
 <img width="1918" height="907" alt="image" src="https://github.com/user-attachments/assets/c38cf5dd-595a-49ef-b327-a70409c384d5" />
 <img width="1917" height="907" alt="image" src="https://github.com/user-attachments/assets/64246199-576b-497f-806f-a8020c84f9aa" />
 <img width="1918" height="909" alt="image" src="https://github.com/user-attachments/assets/e6f3570d-2cb3-46e0-a1b9-1402c20a817e" />
-<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/59e9021b-9986-4062-8045-2f03cf0a53fb" />
+<img width="1917" height="909" alt="image" src="https://github.com/user-attachments/assets/4b899bce-26c4-4a7f-abd8-be9d14c39836" />
+<img width="1918" height="911" alt="image" src="https://github.com/user-attachments/assets/2fc4c8aa-e189-4521-8f3f-e366d9d4372f" />
 <img width="1917" height="911" alt="image" src="https://github.com/user-attachments/assets/e6c8563d-895a-405c-84e2-a90e759f25b2" />
 <img width="1917" height="909" alt="image" src="https://github.com/user-attachments/assets/329ee6bf-e961-4661-a489-8093bf70e8fc" />
-<img width="1917" height="909" alt="image" src="https://github.com/user-attachments/assets/a76fe4cf-0e7f-4494-b1d1-3e355f7d7348" />
-
+<img width="1915" height="910" alt="image" src="https://github.com/user-attachments/assets/12e9ac4b-ee42-42db-93bc-0ed5f88bafdb" />
 
 ---
 
