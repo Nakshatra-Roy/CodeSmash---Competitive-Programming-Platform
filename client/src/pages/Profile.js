@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import UserActivity from '../components/UserActivity'
 import toast, { Toaster } from "react-hot-toast";
 import { useAuth } from "../context/authContext";
 import { FaGithub, FaLinkedin, FaTwitter, FaGlobe } from "react-icons/fa";
@@ -12,6 +13,7 @@ export default function Profile() {
   const [editing, setEditing] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [passwordData, setPasswordData] = useState({ current: "", newPass: "" });
+  const [previewUrl, setPreviewUrl] = useState(null);
   const fileRef = useRef(null);
   const navigate = useNavigate();
 
@@ -57,6 +59,33 @@ export default function Profile() {
       setSaving(false);
     }
     navigate("/profile");
+  };
+
+  const handleSaveDP = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setPreviewUrl(URL.createObjectURL(file));
+    setSaving(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const res = await axios.put(`/api/auth/${user._id}/avatar`, formData, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+
+      toast.success("Avatar updated successfully.");
+      setEditing(false);
+      loadUser();
+      navigate("/profile");
+    } catch (err) {
+      toast.error("Avatar update failed.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -113,21 +142,33 @@ export default function Profile() {
         <aside className="card glass profile-aside animate-left">
           <div className="avatar-wrap">
             <img
-              src={formData.avatarUrl || "/images/avatar-placeholder.png"}
-              alt={formData.username}
-              className="avatar"
-            />
+                src={
+                  previewUrl ||
+                  formData.avatar ||
+                  "https://i.postimg.cc/9XdrBtYQ/Profile-avatar-placeholder-large.png"
+                }
+                alt={formData.username}
+                className="avatar"
+              />
+
             <div className="flex gap-1 mt-2">
               <button
                 type="button"
                 className="btn glossy ghost"
-                onClick={() => fileRef.current?.click()}
+                onClick={() => fileRef.current.click()}
               >
                 Change Avatar
               </button>
             </div>
-            <input type="file" ref={fileRef} style={{ display: "none" }} />
+            <input
+              type="file"
+              ref={fileRef}
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleSaveDP}
+            />
           </div>
+
           <br />
           <div className="identity">
             <h2 className="hero-title shine">@{formData.username}</h2>
@@ -148,8 +189,9 @@ export default function Profile() {
           </div>
           <br />
           <div className="stats">
-            <div className="stat-card">🏆 Contests: {user?.contests?.length || 0}</div>
-            <div className="stat-card">📚 Problems: {user?.problems?.length || 0}</div>
+            <div className="stat-card">🏆 Contests Hosted: {user?.contests?.length || 0}</div>
+            <div className="stat-card">🏆 Contests Enrolled: {user?.contestEnroll?.length || 0}</div>
+            <div className="stat-card">📚 Problems Written: {user?.problems?.length || 0}</div>
             <div className="stat-card">📄 Submissions: {user?.submissions?.length || 0}</div>
           </div>
           <br />
@@ -213,6 +255,10 @@ export default function Profile() {
             </button>
           </div>
         </aside>
+
+        {/* Historical Activity */}
+        {!editing && !changingPassword && <UserActivity userId={user?._id} />}
+
 
         {/* Edit Profile Form */}
         {editing && (

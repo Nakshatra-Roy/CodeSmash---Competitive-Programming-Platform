@@ -181,7 +181,7 @@ const Submissions = () => {
                     <span className="tag">Time: {s.time || "N/A"}</span>
                     <span className="tag">Memory: {s.memory || "N/A"}</span>
                   </p>
-
+                  
                   <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
                     <button className="btn tiny glossy ghost" onClick={() => window.location.href = `/report/${s.id}`}>
                       📊 Report
@@ -191,6 +191,8 @@ const Submissions = () => {
                       ✏️ Open
                     </button>
                   </div>
+                  <br/>
+                  <span className="pill">Submitted: {new Date(s.createdAt).toLocaleString("en-GB")}</span>
                 </div>
               ))
             ) : (

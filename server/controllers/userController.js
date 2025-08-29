@@ -80,7 +80,6 @@ export const updateUser = async (req, res) => {
 
     if (req.io) {
       if (emitFlagEvent) {
-        // console.log("📡 EMITTING userFlagged to room:", id.toString());
         req.io.to(id.toString()).emit("userFlagged", {
           message: flag
             ? "❌ Your account has been flagged by an administrator. Some functionalities have been blocked."

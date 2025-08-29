@@ -235,7 +235,7 @@ function AdminUsers() {
                     </div>
 
                     <div className="user-hover-info">
-                      <p><strong>Name:</strong> {u?.name}</p>
+                      <p><strong>Username:</strong> {u?.username}</p>
                       <p><strong>Bio:</strong> {u?.bio || "—"}</p>
                       <p><strong>Email:</strong> {u?.email}</p>
                       <p>
@@ -248,7 +248,10 @@ function AdminUsers() {
                             })
                           : "N/A"}
                       </p>
-
+                      <p><strong>🏆 Contests Hosted:</strong> {u?.contests.length}</p>
+                      <p><strong>🏆 Contests Enrolled:</strong> {u?.contestEnroll.length}</p>
+                      <p><strong>📚 Problems Written:</strong> {u?.problems.length}</p>
+                      <p><strong>📄 Submissions:</strong> {u?.submissions.length}</p>
                     </div>
                   </div>
                 );
@@ -271,8 +274,8 @@ function AdminUsers() {
           .user-hover-info {
             display: none;
             position: absolute;
-            top: 100%;
-            left: 0;
+            top: 0%;
+            left: 20%;
             z-index: 50;
             max-width: 320px;
             width: max-content;

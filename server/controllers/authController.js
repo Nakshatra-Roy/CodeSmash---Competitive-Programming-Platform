@@ -130,7 +130,6 @@ export const updateUser = async (req, res) => {
   if (!token) return res.status(401).json({ error: "No session found" });
 
   try {
-    // Verify token
     const decoded = jwt.verify(token, JWT_SECRET);
 
     if (decoded.id !== req.params.id) {

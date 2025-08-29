@@ -56,23 +56,23 @@ const Contests = () => {
   const allOrganizers = useMemo(() => [...new Set(contests.map(c => c.organizer).filter(Boolean))], [contests]);
 
   const filteredContests = useMemo(() => {
-  const s = filters.search?.trim().toLowerCase();
-  const sd = filters.startDate ? new Date(filters.startDate) : null;
+    const s = filters.search?.trim().toLowerCase();
+    const sd = filters.startDate ? new Date(filters.startDate) : null;
 
-  return contests.filter(c => {
-    if (filters.showMine) {
-      if (!c.authors?.includes(user?._id)) return false;
-    } else {
-      if (c.status === "Pending" || c.status === "Rejected") return false;
-    }
-    const matchSearch = !s || (c.title.toLowerCase().includes(s) || (c.description || "").toLowerCase().includes(s));
-    const matchTag = !filters.tag || (c.tags || []).includes(filters.tag);
-    const matchOrganizer = !filters.organizer || c.organizer === filters.organizer;
-    const matchStartDate = !sd || new Date(c.startTime) >= sd;
+    return contests.filter(c => {
+      if (filters.showMine) {
+        if (!c.authors?.includes(user?._id)) return false;
+      } else {
+        if (c.status === "Pending" || c.status === "Rejected") return false;
+      }
+      const matchSearch = !s || (c.title.toLowerCase().includes(s) || (c.description || "").toLowerCase().includes(s));
+      const matchTag = !filters.tag || (c.tags || []).includes(filters.tag);
+      const matchOrganizer = !filters.organizer || c.organizer === filters.organizer;
+      const matchStartDate = !sd || new Date(c.startTime) >= sd;
 
-    return matchSearch && matchTag && matchOrganizer && matchStartDate;
-  });
-}, [contests, filters, user]);
+      return matchSearch && matchTag && matchOrganizer && matchStartDate;
+    });
+  }, [contests, filters, user]);
 
 
   const getId = (c, i) => c?._id || c?.id || `c-${i}`;

@@ -62,7 +62,7 @@ exports.getAllSubmissions = async (req, res) => {
     const submissions = await Submission.find()
       .sort({ createdAt: -1 })
       .populate("problem", "title")
-      .populate("user", "name");
+      .populate("user", "name _id");
 
     const formatted = submissions.map((s) => ({
       id: s._id,
@@ -71,6 +71,7 @@ exports.getAllSubmissions = async (req, res) => {
         id: s.user._id,
         name: s.user.name
       },
+      language: s.language,
       verdict: s.verdict,
       time: s.time,
       memory: s.memory,
@@ -88,7 +89,7 @@ exports.getSubmissionById = async (req, res) => {
   try {
     const sub = await Submission.findById(req.params.id)
       .populate("problem", "title description")
-    //   .populate("user", "username");
+      .populate("user", "username _id name");
 
     if (!sub) return res.status(404).json({ error: "Not found" });
     res.json(sub);

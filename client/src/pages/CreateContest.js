@@ -18,6 +18,25 @@ const CreateContest = () => {
     tags: [],
   });
 
+  const handleReset = async () => {
+    const confirmReset = window.confirm(
+      "⚠️ Are you sure you want to reset? Your changes will be lost."
+    );
+    if (!confirmReset) return;
+    setNewContest({
+                        title: "",
+                        description: "",
+                        startTime: "",
+                        endTime: "",
+                        banner: "",
+                        duration: 60,
+                        organizer: "",
+                        otherAuthorsUsernames: [],
+                        problems: [],
+                        tags: [],
+                      })
+  }
+
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -53,10 +72,15 @@ const CreateContest = () => {
       return;
     }
 
+    const confirmReset = window.confirm(
+      "⚠️ Are you sure you want to submit? You won't be able to edit the contest again till it is approved."
+    );
+    if (!confirmReset) return;
+
     try {
       setLoading(true);
       const res = await axios.post("/api/contests", newContest, { withCredentials: true });
-      show("success", "Contest submitted for approval successfully!");
+      show("success", "Contest has been submitted for admin approval.");
       setNewContest({
         title: "",
         description: "",
@@ -166,6 +190,18 @@ const CreateContest = () => {
                 </div>
 
                 <div className="field">
+                  <label className="label">Contest Banner (Paste direct link)</label>
+                  <input
+                    type="number"
+                    min={1}
+                    className="input glass-input"
+                    value={newContest.banner}
+                    onChange={(e) => onChange("banner", e.target.value)}
+                    placeholder="https://i.postimg.cc/XXXXXX/BUCC-BIT-Battles.png"
+                  />
+                </div>
+
+                <div className="field">
                   <label className="label">Organizer</label>
                   <input
                     className="input glass-input"
@@ -218,20 +254,7 @@ const CreateContest = () => {
                   <button
                     type="button"
                     className="btn glossy ghost"
-                    onClick={() =>
-                      setNewContest({
-                        title: "",
-                        description: "",
-                        startTime: "",
-                        endTime: "",
-                        banner: "",
-                        duration: 60,
-                        organizer: "",
-                        otherAuthorsUsernames: [],
-                        problems: [],
-                        tags: [],
-                      })
-                    }
+                    onClick={handleReset}
                   >
                     Reset
                   </button>

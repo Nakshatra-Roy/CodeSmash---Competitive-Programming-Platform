@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import CustomDropdown from "./CustomDropdown";
 import toast, { Toaster } from "react-hot-toast";
 import { useAuth } from "../context/authContext";
@@ -208,6 +208,10 @@ const ProblemView = () => {
   }, [id]);
 
   const handleSubmit = async () => {
+    const confirmReset = window.confirm(
+      "⚠️ Are you sure you want to submit the code? This action can't be undone."
+    );
+    if (!confirmReset) return;
     setSubmitting(true);
     setError(null);
 
@@ -244,7 +248,6 @@ const ProblemView = () => {
       navigate(`/submissions/${sid}`);
 
     } catch (err) {
-      // Show toast with full error
       toast.error(`Submission failed: ${err.message}`);
     } finally {
       setSubmitting(false);
@@ -254,7 +257,7 @@ const ProblemView = () => {
 
   const handleReset = () => {
     const confirmReset = window.confirm(
-      "⚠️ Are you sure you want to reset the code? Your changes will be lost."
+      "⚠️ Are you sure you want to reset the code? Your changes will be lost. This action can't be undone."
     );
     if (!confirmReset) return;
 
@@ -290,7 +293,18 @@ const ProblemView = () => {
         </h2>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         
+
         <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "16px" }}>
+              {isLoggedInAdmin && (
+              <Link to="/admin/problems" className="btn tiny ghost" style={{ marginBottom: 24 }}>
+                ← All Problems
+              </Link>
+              )}
+              {!isLoggedInAdmin && (
+              <Link to="/problems" className="btn tiny ghost" style={{ marginBottom: 24 }}>
+                ← All Problems
+              </Link>
+              )}
               {isLoggedInAdmin && (problem?.status == "Pending" || problem?.status == "Rejected") && (
               <button
                 className="btn glossy primary"

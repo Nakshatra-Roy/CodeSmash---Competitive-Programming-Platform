@@ -7,9 +7,11 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     dateOfBirth: { type: Date, required: true },
+    avatar: { type: String, default: 'https://i.postimg.cc/9XdrBtYQ/Profile-avatar-placeholder-large.png'},
     bio: { type: String },
     contests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Contest" }],
     problems: [{ type: mongoose.Schema.Types.ObjectId, ref: "Problem" }],
+    contestEnroll: [{ type: mongoose.Schema.Types.ObjectId, ref: "Contest" }],
     submissions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Submission" }],
 
     socialLinks: { 
