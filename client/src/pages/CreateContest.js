@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from '../context/authContext';
 import axios from "axios";
 import toast, { Toaster } from 'react-hot-toast';
@@ -129,6 +129,7 @@ const CreateContest = () => {
         <div className="container">
           <div className="section-head">
             <h2>Create New Contest</h2>
+            <Link to="/contests" className="btn tiny ghost">← All Contests</Link>
           </div>
 
           <div className="card glass">
@@ -136,7 +137,7 @@ const CreateContest = () => {
               <div className="form-shell">
 
                 <div className="field">
-                  <label className="label">Title</label>
+                  <label className="label">Title*</label>
                   <input
                     className="input glass-input"
                     value={newContest.title}
@@ -146,7 +147,7 @@ const CreateContest = () => {
                 </div>
 
                 <div className="field">
-                  <label className="label">Description</label>
+                  <label className="label">Description*</label>
                   <textarea
                     className="input glass-input textarea"
                     value={newContest.description}
@@ -158,7 +159,7 @@ const CreateContest = () => {
 
                 <div className="grid cols-2 gap">
                   <div className="field">
-                    <label className="label">Start Time</label>
+                    <label className="label">Start Time*</label>
                     <input
                       type="datetime-local"
                       className="input glass-input"
@@ -168,7 +169,7 @@ const CreateContest = () => {
                   </div>
 
                   <div className="field">
-                    <label className="label">End Time</label>
+                    <label className="label">End Time*</label>
                     <input
                       type="datetime-local"
                       className="input glass-input"
@@ -202,7 +203,7 @@ const CreateContest = () => {
                 </div>
 
                 <div className="field">
-                  <label className="label">Organizer</label>
+                  <label className="label">Organizer*</label>
                   <input
                     className="input glass-input"
                     value={newContest.organizer}
@@ -224,7 +225,7 @@ const CreateContest = () => {
                 </div>
 
                 <div className="field">
-                  <label className="label">Problems (comma separated Problem IDs)</label>
+                  <label className="label">Problems* (comma separated Problem IDs)</label>
                   <input
                     className="input glass-input"
                     value={newContest.problems.join(", ")}
@@ -236,7 +237,7 @@ const CreateContest = () => {
                 </div>
 
                 <div className="field">
-                  <label className="label">Tags (comma separated)</label>
+                  <label className="label">Tags* (comma separated)</label>
                   <input
                     className="input glass-input"
                     value={newContest.tags.join(", ")}
@@ -246,6 +247,10 @@ const CreateContest = () => {
                     }
                   />
                 </div>
+                <div className="field">
+                    <label className="label">*Fields are required</label>
+                </div>
+
 
                 <div className="actions">
                   <button type="submit" className="btn glossy primary">

@@ -132,17 +132,14 @@ export default function UserActivity({ userId }) {
 
             <h3 className="card-title">{s.problem || "Untitled Problem"}</h3>
             <p className="card-sub">
-                <span className="tag">Time: {s.time || "N/A"}</span>
-                <span className="tag">Memory: {s.memory || "N/A"}</span>
+                <span className="tag">🕑 Time: {s.time || "N/A"}ms</span>
+                <span className="tag">💾 Memory: {s.memory || "N/A"}KB</span>
             </p>
 
             <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                <Link to={`/report/${s._id || s.id}`} className="btn tiny glossy ghost">
-                📊 Report
-                </Link>
                 <button className="btn tiny glossy ghost">🛠️ Rejudge</button>
                 <Link to={`/submissions/${s._id || s.id}`} className="btn tiny glossy ghost">
-                ✏️ Open
+                📊 Report
                 </Link>
             
             </div>
@@ -255,7 +252,6 @@ export default function UserActivity({ userId }) {
   );
 }
 
-/* Expandable Section Component */
 function ExpandableSection({ title, items, render, getId, emptyText }) {
   const [expanded, setExpanded] = useState(false);
   const visibleItems = expanded ? items : items.slice(0, 2);
@@ -280,7 +276,6 @@ function ExpandableSection({ title, items, render, getId, emptyText }) {
   );
 }
 
-/* GenericPopover stays same as in your code */
 function GenericPopover({ item, anchorRect, openMode, onClose, onPointerEnter, onPointerLeave }) {
   const [open, setOpen] = React.useState(false);
   React.useEffect(() => setOpen(true), []);

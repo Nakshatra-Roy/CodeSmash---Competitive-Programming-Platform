@@ -179,9 +179,24 @@
         transition: background 0.5s ease;
         position: relative;
       }
+      .row.leaderboard {
+        display: grid;
+        grid-template-columns: 40px 3fr 1fr 1fr 1fr 1fr 1fr;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 15px;
+        border-radius: 12px;
+        box-shadow: 0 5px 5px rgba(0, 0, 0, 0.15);
+        transition: background 0.5s ease;
+        position: relative;
+      }
         .row.head { color: #c7d2fe; font-weight: 700; background: rgba(255,255,255,0.02); border-top-left-radius: 12px; border-top-right-radius: 12px; }
         .row.users.head {
             grid-template-columns: 40px 1.5fr 2fr 1fr 1fr;
+            font-weight: bold;
+        }
+        .row.leaderboard.head {
+            grid-template-columns: 40px 3fr 1fr 1fr 1fr 1fr 1fr;
             font-weight: bold;
         }
         .user { display:flex; align-items:center; gap:10px; }
@@ -535,29 +550,33 @@
 
 /* ADMIN STATS */
 
-.summary-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1.5rem;
-  text-align: center;
+.summary-section {
+  margin-bottom: 2rem;
 }
 
-.stat-item {
-  background-color: #f3f4f6;
-  padding: 1rem;
-  border-radius: 8px;
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #38bdf8; /* cyan accent */
+}
+
+.summary-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
 }
 
 .stat-value {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #1d4ed8;
 }
 
 .stat-label {
   font-size: 0.9rem;
-  color: #6b7280;
+  opacity: 0.8;
 }
+
 
 .flex {
   display: flex;
@@ -585,4 +604,38 @@
 
 .gap-4 {
   gap: 16px;  /* extra large gap */
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.dashboard-two-col {
+  display: grid;
+  grid-template-columns: minmax(360px, 1fr) minmax(360px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.span-2 {
+  grid-column: 1 / -1;
+}
+
+.panel {
+  padding: 16px;
+}
+
+@media (max-width: 1100px) {
+  .dashboard-two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pie-charts-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
 }

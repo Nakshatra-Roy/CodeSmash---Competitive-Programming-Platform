@@ -11,6 +11,7 @@ const ContestView = () => {
   const [allUsers, setAllUsers] = useState([]);
   const { user } = useAuth();
 
+
   const isLoggedInAdmin = user && user.role === "admin";
 
   const [editing, setEditing] = useState(false);
@@ -24,7 +25,7 @@ const ContestView = () => {
         const filteredUsers = Array.isArray(data) ? data.filter(u => u.role === "user") : [];
         setAllUsers(filteredUsers);
       })
-      .catch(err => console.error("Failed to fetch users", err));
+      .catch(err => toast.error("Failed to fetch users", err));
   }, []);
 
 
@@ -423,7 +424,7 @@ const ContestView = () => {
             </button>
           )}
 
-          {!isLoggedInAdmin && !isAuthor && !isParticipant && contest.status === "Upcoming" && (
+          {!isLoggedInAdmin && !isAuthor && !isParticipant && user && contest.status === "Upcoming" && (
             <button
               className="btn glossy primary"
               style={{ marginTop: "16px" }}
@@ -432,7 +433,16 @@ const ContestView = () => {
               ENROLL
             </button>
           )}
-          {!isLoggedInAdmin && !isAuthor && isParticipant && contest.status === "Upcoming" && (
+          {!isLoggedInAdmin && !isAuthor && !isParticipant && !user && contest.status === "Upcoming" && (
+            <Link
+              className="btn glossy primary"
+              style={{ marginTop: "16px" }}
+              to="/login"
+            >
+              Sign in to Enroll
+            </Link>
+          )}
+          {!isLoggedInAdmin && !isAuthor && isParticipant && user && contest.status === "Upcoming" && (
             <button
               className="btn glossy danger"
               style={{ marginTop: "16px" }}
@@ -468,9 +478,17 @@ const ContestView = () => {
               <div className="card-sub" style={{ marginBottom: 16 }}>
                 <strong>Authors:</strong>{" "}
                 {contest.authors.map((a, i) => (
-                  <span className="btn tiny ghost" key={i} style={{ marginRight: 6 }}>
-                    👤 {typeof a === "object" ? a.name : `User ${i + 1}`}
-                  </span>
+                  // <span className="btn tiny ghost" key={i} style={{ marginRight: 6 }}>
+                  //   👤 {typeof a === "object" ? a.name : `User ${i + 1}`}
+                  // </span>
+                  <li key={i} style={{ marginBottom: 6 }}>
+                      <Link
+                        className="btn tiny ghost"
+                        to={`/users/${a._id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >👤 {a.name}</Link>
+                    </li>
                 ))}
               </div>
             )}
@@ -479,9 +497,17 @@ const ContestView = () => {
               <div className="card-sub" style={{ marginBottom: 16 }}>
                 <strong>Participants:</strong>{" "}
                 {contest.participants.map((p, i) => (
-                  <span className="btn tiny ghost" key={i} style={{ marginRight: 6 }}>
-                    👤 {typeof p === "object" ? p.name : `User ${i + 1}`}
-                  </span>
+                  // <span className="btn tiny ghost" key={i} style={{ marginRight: 6 }}>
+                  //   👤 {typeof p === "object" ? p.name : `User ${i + 1}`}
+                  // </span>
+                  <li key={i} style={{ marginBottom: 6 }}>
+                      <Link
+                        className="btn tiny ghost"
+                        to={`/users/${p._id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >👤 {p.name}</Link>
+                    </li>
                 ))}
               </div>
             )}

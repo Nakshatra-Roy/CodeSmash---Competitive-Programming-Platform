@@ -12,6 +12,7 @@ import submissionRoutes from "./routes/submissionRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import runRoutes from "./routes/runRoutes.js";
 import path from "path";
 import express from "express";
 
@@ -32,6 +33,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/contests", contestRoutes);
 app.use("/api/submissions", submissionRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/run", runRoutes);
 
 
 mongoose.connect(process.env.MONGO_URI)

@@ -18,6 +18,7 @@ const Contests = () => {
   const [anchorRect, setAnchorRect] = useState(null);
   const [openContest, setOpenContest] = useState(null);
 
+
   const [filters, setFilters] = useState({
     search: "",
     tag: "",
@@ -141,7 +142,10 @@ const Contests = () => {
 
       <div style={{ position: "relative", zIndex: 1, padding: "32px 0" }}>
         <div className="section-head">
-          <h2>History is written here. Carve yours in stone.</h2>
+          <h2>History is written here. Carve yours in stone.
+            <br/>
+            Face the ultimate battle.
+          </h2>
           <Link to="/" className="btn tiny ghost">← Home</Link>
           <Link to="/contests/new" className="btn glossy primary">📝 Create Contest</Link>
         </div>
@@ -154,12 +158,14 @@ const Contests = () => {
           extraButtons={
             <>
               <button className="btn small ghost" onClick={handleReset}>Reset</button>
+              {user && (
               <button
                 className={`btn small ghost${filters.showMine ? " active" : ""}`}
                 onClick={handleShowMine}
               >
                 My Contests
               </button>
+              )}
             </>
           }
           filters={filters}

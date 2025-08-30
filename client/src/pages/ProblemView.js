@@ -4,6 +4,18 @@ import CustomDropdown from "./CustomDropdown";
 import toast, { Toaster } from "react-hot-toast";
 import { useAuth } from "../context/authContext";
 
+const verdictClass = (verdict) => {
+  if (!verdict) return "pill";
+  const v = verdict.toLowerCase();
+  if (v.includes("accepted")) return "pill success";
+  if (v.includes("generated")) return "pill success";
+  if (v.includes("wrong")) return "pill danger";
+  if (v.includes("error") || v.includes("runtime")) return "pill danger";
+  if (v.includes("time")) return "pill warning";
+  return "pill";
+};
+
+
 const LANGUAGES = [
   { id: "cpp17", label: "C++17" },
   { id: "cpp20", label: "C++20" },
@@ -157,6 +169,9 @@ const ProblemView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState(null);
+
   const { user } = useAuth();
   const isLoggedInAdmin = user && user.role === "admin";
 
@@ -206,6 +221,41 @@ const ProblemView = () => {
       alive = false;
     };
   }, [id]);
+
+  const handleTest = async () => {
+    setTesting(true);
+    setTestResult(null);
+    try {
+      const res = await fetch(`/api/run`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          language,
+          source: sourceCode,
+          stdin: customInput || ""
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.message || `Run failed (${res.status})`);
+      }
+      let verdict;
+      if (data.status?.toLowerCase().includes("error")) {
+        verdict = "Error";
+      } else if (data.stdout?.trim()) {
+        verdict = "Output Generated";
+      } else {
+        verdict = data.status || "Unknown";
+      }
+
+      setTestResult({ ...data, verdict });;
+    } catch (err) {
+      toast.error(`Run failed: ${err.message}`);
+    } finally {
+      setTesting(false);
+    }
+  };
 
   const handleSubmit = async () => {
     const confirmReset = window.confirm(
@@ -282,9 +332,16 @@ const ProblemView = () => {
           <span className={`pill ${problem?.difficulty?.toLowerCase?.() || ""}`}>
             {problem?.difficulty || "Loading…"}
           </span>
-          <span className={"badge code"}>
-            {`by ${problem?.author.name}` || "Loading…"}
-          </span>
+          <a
+            href={`/users/${problem?.author?._id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: "none" }}
+          >
+            <span className="btn tiny ghost">
+              {`by ${problem?.author?.name}` || "Loading…"}
+            </span>
+          </a>
           {isLoggedInAdmin && (
             <span className={"badge code"}>
             {problem?.status|| "Loading…"}
@@ -431,18 +488,24 @@ const ProblemView = () => {
             <h4>Editor</h4>    
             {!isLoggedInAdmin && (
               <div style={{ display: "flex", gap: "12px", justifyContent: "right", marginTop: "16px" }}>
-                <CustomDropdown options={LANGUAGES} value={language} onChange={setLanguage} />
-                <button onClick={handleCopy} className="btn glossy ghost">Copy</button>
-                <button onClick={handleReset} className="btn glossy ghost">Reset</button>
-                <button
-                  onClick={handleSubmit}
-                  disabled={submitting}
-                  className="btn glossy primary"
-                >
-                  {submitting ? "Submitting…" : "🚀 Submit"}
-                </button>
-              
-              </div>
+              <CustomDropdown options={LANGUAGES} value={language} onChange={setLanguage} />
+              <button onClick={handleCopy} className="btn glossy ghost">Copy</button>
+              <button onClick={handleReset} className="btn glossy ghost">Reset</button>
+              <button
+                onClick={handleTest}
+                disabled={testing}
+                className="btn glossy ghost"
+              >
+                {testing ? "Running…" : "▶️ Test"}
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="btn glossy primary"
+              >
+                {submitting ? "Submitting…" : "🚀 Submit"}
+              </button>
+            </div>
             )}
             </div>
             <textarea
@@ -483,6 +546,43 @@ const ProblemView = () => {
               }}
               placeholder="Paste input here to test locally before submitting"
             />
+
+            {/* TEST RESULT (only if user tests) */}
+            {testResult && (
+              <div className="card glass" style={{ marginTop: 16 }}>
+                <div className="section-head" style={{ justifyContent: "space-between" }}>
+                  <h4>Test Result</h4>
+                  <span className={verdictClass(testResult.verdict)}>
+                    {testResult.verdict}
+                  </span>
+                </div>
+
+                <div className="row" style={{ marginBottom: 8 }}>
+                  <strong>Time:</strong> {testResult.time || "—"}s
+                </div>
+                <div className="row" style={{ marginBottom: 8 }}>
+                  <strong>Memory:</strong> {testResult.memory || "—"} KB
+                </div>
+
+                {testResult.stdout && (
+                  <div style={{ marginTop: 8 }}>
+                    <strong>Output:</strong>
+                    <pre style={{ whiteSpace: "pre-wrap", margin: 0 }}>
+                      {testResult.stdout}
+                    </pre>
+                  </div>
+                )}
+
+                {testResult.stderr && (
+                  <div style={{ marginTop: 8, color: "#ef4444" }}>
+                    <strong>Error:</strong>
+                    <pre style={{ whiteSpace: "pre-wrap", margin: 0 }}>
+                      {testResult.stderr}
+                    </pre>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div style={{ color: "var(--muted)", fontSize: 13, marginTop: 12 }}>
               Tips:

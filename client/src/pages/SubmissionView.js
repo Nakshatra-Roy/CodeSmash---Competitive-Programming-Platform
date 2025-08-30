@@ -72,18 +72,42 @@ const SubmissionView = () => {
 
   return (
     <div style={{ padding: "32px 0" }}>
+      <div className="backdrop">
+        <div className="blob b1" />
+        <div className="blob b2" />
+        <div className="grid-overlay" />
+      </div>
       <div className="section-head">
         <h2>
           Submission Report: <strong>{submission.id || submission._id}</strong>
           <br />
-          <span className={`pill ${getVerdictColor(submission.verdict)}`}>{submission.verdict || "Pending"}</span>
+          <span className={`pill ${getVerdictColor(submission.verdict)}`}>Verdict: {submission.verdict || "Pending"}</span>
         </h2>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-          <button className="btn tiny glossy primary" onClick={() => window.location.href = `/report/${submission._id}`}>
-            📊 Report
+          <button
+            className="btn tiny glossy ghost"
+            onClick={async () => {
+              if (!window.confirm("⚠️ Are you sure you want to rejudge this submission? This action cannot be undone.")) return;
+              try {
+                const res = await fetch(`/api/submissions/${submission._id}/rejudge`, {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                  }
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || "Failed to rejudge");
+                toast.success("Rejudged: " + data.submission.verdict);
+                setSubmission(data.submission);
+              } catch (err) {
+                toast.error(err.message);
+              }
+            }}
+          >
+            🛠️ Rejudge
           </button>
-          <button className="btn tiny glossy ghost">🛠️ Rejudge</button>
+
 
           {isAdmin && (
             <button className="btn glossy danger" onClick={handleDelete}>
@@ -100,8 +124,9 @@ const SubmissionView = () => {
           <h3 className="card-title" style={{ marginBottom: 8 }}>
             Problem: <strong>{submission.problem?.title || "Untitled Problem"}</strong>
           </h3>
+          <p>Description: {submission.problem?.description || "This problem has no description."}</p>
           {submission.problem?._id && (
-            <Link to={`/problems/${submission.problem._id}`} className="btn glossy ghost" style={{ marginTop: 8 }}>
+            <Link to={`/problems/${submission.problem._id}`} className="btn tiny ghost" style={{ marginTop: 8 }} target="_blank" rel="noopener noreferrer">
               Open Problem →
             </Link>
           )}

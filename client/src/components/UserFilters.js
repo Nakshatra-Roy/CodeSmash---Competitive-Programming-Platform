@@ -6,6 +6,7 @@ const UserFilters = ({ onFilterChange, roles }) => {
   const [search, setSearch] = useState("");
   const [role, setRole] = useState("");
   const [accountStatus, setAccountStatus] = useState(""); 
+  const [flagStatus, setFlagStatus] = useState(""); 
   const [searchFocused, setSearchFocused] = useState(false);
   const [dropdownFocus, setDropdownFocus] = useState(null);
 
@@ -14,21 +15,23 @@ const UserFilters = ({ onFilterChange, roles }) => {
       search,
       role,
       accountStatus,
+      flagStatus,
       [key]: value,
     };
 
     setSearch(newFilters.search);
     setRole(newFilters.role);
     setAccountStatus(newFilters.accountStatus);
-
-    onFilterChange(newFilters); // notify parent
+    setFlagStatus(newFilters.flagStatus);
+    onFilterChange(newFilters);
   };
 
   const handleReset = () => {
     setSearch("");
     setRole("");
     setAccountStatus("");
-    onFilterChange({ search: "", role: "", status: "" });
+    setFlagStatus("")
+    onFilterChange({ search: "", role: "", status: "", flag: "" });
     toast.success("Search filter cleared!")
 
   };
@@ -110,11 +113,28 @@ const UserFilters = ({ onFilterChange, roles }) => {
         <option value="active">Active Users</option>
         <option value="inactive">Deactivated Users</option>
       </select>
+
+      {/* Flag Status Filter */}
+      <select
+        value={flagStatus}
+        onChange={(e) => handleChange("flagStatus", e.target.value)}
+        onFocus={() => setDropdownFocus("flagStatus")}
+        onBlur={() => setDropdownFocus(null)}
+        style={
+          dropdownFocus === "flagStatus"
+            ? glassBlueFocus
+            : glassBlueStyle
+        }
+      >
+        <option value="">Flag Status</option>
+        <option value="flagged">Flagged Users</option>
+        <option value="unflagged">Unflagged Users</option>
+      </select>
+
         {/* Reset Button */}
         <button
             onClick={handleReset}
-            className="btn glossy primary"
-        >
+            className="btn glossy primary">
             Reset Filters
         </button>
     </div>

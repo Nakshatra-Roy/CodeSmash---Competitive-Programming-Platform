@@ -1,71 +1,15 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import UserFilters from "../components/UserFilters";
-import toast, { Toaster } from 'react-hot-toast';
 
-function useFetch(url, initial = []) {
-  const [data, setData] = useState(initial);
-  const [loading, setLoading] = useState(!!url);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    let alive = true;
-    if (!url) return;
-    (async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`Failed (${res.status})`);
-        const json = await res.json();
-        if (alive) setData(json);
-      } catch (e) {
-        if (alive) setError(e.message);
-      } finally {
-        if (alive) setLoading(false);
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [url]);
-
-  return { data, loading, error };
-}
-
-function AdminUsers() {
-  const { data: users, loading } = useFetch(`/api/users/`, []);
+const ShowAdmins = ({ admins, loading }) => {
   const [list, setList] = useState([]);
-  const [filters, setFilters] = useState({ search: "", role: "", accountStatus: "", flag: ""});
-
   const [flagPending, setFlagPending] = useState(new Set());
   const [statusPending, setStatusPending] = useState(new Set());
   const [rolePending, setRolePending] = useState(new Set());
 
   useEffect(() => {
-    setList(users || []);
-  }, [users]);
-
-  const roles = useMemo(() => [...new Set((users || []).map(u => u.role).filter(Boolean))], [users]);
-
-  const filteredUsers = useMemo(() => {
-    const s = filters.search.trim().toLowerCase();
-    return (list || []).filter(u => {
-      const matchSearch =
-        s === "" ||
-        (u.name).toLowerCase().includes(s) ||
-        u.email.toLowerCase().includes(s);
-      const matchRole = filters.role ? u.role === filters.role : true;
-      const matchStatus =
-        filters.accountStatus ? u.accountStatus === filters.accountStatus : true;
-      const matchFlag = filters.flagStatus
-        ? filters.flagStatus === "flagged"
-          ? u.flag === true
-          : u.flag === false
-        : true;
-      return matchSearch && matchRole && matchStatus && matchFlag;
-    });
-  }, [list, filters]);
+    setList(admins || []);
+  }, [admins]);
 
   const handleToggleFlag = async (user) => {
     if (!user?._id) return;
@@ -81,9 +25,9 @@ function AdminUsers() {
       });
       if (!res.ok) throw new Error(`Failed (${res.status})`);
       setList(prev => prev.map(u => (u._id === id ? { ...u, flag: nextFlag } : u)));
-      toast.success(nextFlag ? "User flagged successfully." : "User unflagged successfully.");
+      alert(nextFlag ? "User flagged successfully" : "User unflagged successfully");
     } catch {
-      toast.error("Error toggling flag.")
+      alert("Error toggling flag");
     } finally {
       setFlagPending(prev => {
         const s = new Set(prev);
@@ -108,9 +52,9 @@ function AdminUsers() {
       });
       if (!res.ok) throw new Error(`Failed (${res.status})`);
       setList(prev => prev.map(u => (u._id === id ? { ...u, accountStatus: nextStatus } : u)));
-      toast.success(nextStatus === "inactive" ? "User deactivated successfully." : "User activated successfully.")
+      alert(nextStatus === "inactive" ? "User deactivated successfully" : "User activated successfully");
     } catch {
-      alert("Error updating account status.");
+      alert("Error updating account status");
     } finally {
       setStatusPending(prev => {
         const s = new Set(prev);
@@ -122,7 +66,7 @@ function AdminUsers() {
 
   const handleChangeRole = async (user, newRole) => {
     if (!user?._id) return;
-    if (!["admin", "user"].includes(newRole)) return;
+    if (!["admin", "user", "volunteer"].includes(newRole)) return;
 
     const id = user._id;
     const prevRole = user.role || "user";
@@ -138,10 +82,11 @@ function AdminUsers() {
         body: JSON.stringify({ role: newRole }),
       });
       if (!res.ok) throw new Error(`Failed (${res.status})`);
-      toast.success(`Role updated to ${newRole}.`)
+      alert(`Role updated to ${newRole}`);
     } catch {
+      // revert on failure
       setList(prev => prev.map(u => (u._id === id ? { ...u, role: prevRole } : u)));
-      toast.error("Error updating role.")
+      alert("Error updating role");
     } finally {
       setRolePending(prev => {
         const s = new Set(prev);
@@ -153,15 +98,9 @@ function AdminUsers() {
 
   return (
     <>
-      <section className="section">
-        <div className="container">
-          <UserFilters roles={roles} onFilterChange={setFilters} />
-
-          <div className="section-head">
-            <h2>All User Details</h2>
+          <div className="text-xl font-semibold mb-4">
+            <Link to="/admin/users" className="btn tiny ghost">← All Users</Link><h2>Administrators</h2>
           </div>
-
-          <div className="card glass">
             <div className="table">
               <div className="row users head">
                 <div>#</div>
@@ -171,7 +110,7 @@ function AdminUsers() {
                 <div>Actions</div>
               </div>
 
-              {(loading ? Array.from({ length: 8 }) : filteredUsers).map((u, i) => {
+              {(loading ? Array.from({ length: 8 }) : list).map((u, i) => {
                 const isFlagged = !!u?.flag;
                 const isInactive = u?.accountStatus === "inactive";
                 const isFlagBusy = u?._id ? flagPending.has(u._id) : false;
@@ -187,13 +126,10 @@ function AdminUsers() {
                     <div>{i + 1}</div>
 
                     <div className="user">
-                      <div className="avatar users">{u?.firstName?.[0]?.toUpperCase() || "U"}</div>
-                      <Link
-                        className="btn glossy ghost"
-                        to={`/users/${u?._id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >{u?.name}</Link>
+                      <div className="avatar users">
+                        {u?.firstName?.[0]?.toUpperCase() || "U"}
+                      </div>
+                      <span>{u?.name}</span>
                     </div>
 
                     <div>{u?.email}</div>
@@ -246,7 +182,6 @@ function AdminUsers() {
 
                     <div className="user-hover-info">
                       <p><strong>Username:</strong> {u?.username}</p>
-                      <p><strong>Bio:</strong> {u?.bio || "—"}</p>
                       <p><strong>Email:</strong> {u?.email}</p>
                       <p>
                         <strong>Date of Birth:</strong>{" "}
@@ -258,27 +193,12 @@ function AdminUsers() {
                             })
                           : "N/A"}
                       </p>
-                      <p><strong>🏆 Contests Hosted:</strong> {u?.contests.length}</p>
-                      <p><strong>🏆 Contests Enrolled:</strong> {u?.contestEnroll.length}</p>
-                      <p><strong>📚 Problems Written:</strong> {u?.problems.length}</p>
-                      <p><strong>📄 Submissions:</strong> {u?.submissions.length}</p>
                     </div>
                   </div>
                 );
               })}
-              {!loading && filteredUsers.length === 0 && (
-                <p style={{ marginTop: 16, textAlign: "center", color: "#6b7280" }}>
-                  No users found.{" "}
-                </p>
-              )}
             </div>
-          </div>
-        </div>
-        <Toaster
-          position="bottom-right"
-          reverseOrder={false}
-          />
-      </section>
+
       <style>
         {`
           .user-hover-info {
@@ -362,6 +282,7 @@ function AdminUsers() {
       </style>
     </>
   );
+
 }
 
-export default AdminUsers;
+export default ShowAdmins;

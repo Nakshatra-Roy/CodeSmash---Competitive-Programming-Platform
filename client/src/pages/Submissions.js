@@ -43,7 +43,11 @@ const Submissions = () => {
     boxShadow: "0 0 10px rgba(0, 60, 255, 0.63)",
     border: "1px solid rgba(0, 255, 255, 0.8)",
   };
-
+  useEffect(() => {
+      if (!user) {
+        navigate("/login");
+      }
+    }, [user]);
 
   useEffect(() => {
     axios
@@ -178,17 +182,14 @@ const Submissions = () => {
 
                   <h3 className="card-title">{s.problem || "Untitled Problem"}</h3>
                   <p className="card-sub">
-                    <span className="tag">Time: {s.time || "N/A"}</span>
-                    <span className="tag">Memory: {s.memory || "N/A"}</span>
+                    <span className="tag">⏱ Time: {s.time || "N/A"}ms</span>
+                    <span className="tag">💾 Memory: {s.memory || "N/A"}KB</span>
                   </p>
                   
                   <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                    <button className="btn tiny glossy ghost" onClick={() => window.location.href = `/report/${s.id}`}>
-                      📊 Report
-                    </button>
                     <button className="btn tiny glossy ghost">🛠️ Rejudge</button>
                     <button className="btn tiny glossy ghost" onClick={() => navigate(`/submissions/${s.id || s._id}`)}>
-                      ✏️ Open
+                      📊 Report
                     </button>
                   </div>
                   <br/>

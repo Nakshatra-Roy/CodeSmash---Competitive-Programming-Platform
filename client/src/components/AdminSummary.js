@@ -1,81 +1,66 @@
-import React from 'react';
+import React from "react";
+
+const StatCard = ({ value, label }) => (
+  <div className="card glass hover-lift">
+    <div className="stat-value">{value}</div>
+    <div className="stat-label">{label}</div>
+  </div>
+);
 
 const AdminSummary = ({ stats }) => {
-    if (!stats) return null;
+  if (!stats) return null;
 
-    const { users, problems, submissions, contests } = stats;
+  const { users, problems, submissions, contests } = stats;
 
-    return (
-        <div>
-            <h2 className="card-title">Platform Summary</h2>
-            <div className="summary-stats-grid">
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{users.userTotal}</div>
-                    <div className="stat-label">Total Users</div>
-                </div>
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{users.adminTotal}</div>
-                    <div className="stat-label">Total Admins</div>
-                </div>
+  return (
+    <div>
+      <div className="text-xl font-semibold mb-4">
+        <h2>Platform Summary</h2>
+      </div>
 
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{problems.total}</div>
-                    <div className="stat-label">Total Problems</div>
-                </div>
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{problems.pending}</div>
-                    <div className="stat-label">Pending Problems</div>
-                </div>
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{problems.approved}</div>
-                    <div className="stat-label">Approved Problems</div>
-                </div>
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{problems.rejected}</div>
-                    <div className="stat-label">Rejected Problems</div>
-                </div>
-
-                 <div className="card glass hover-lift">
-                    <div className="stat-value">{submissions.total}</div>
-                    <div className="stat-label">Total Submissions</div>
-                </div>
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{submissions.pending}</div>
-                    <div className="stat-label">Pending Submissions</div>
-                </div>
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{submissions.accepted}</div>
-                    <div className="stat-label">Accepted Submissions</div>
-                </div>
-
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{contests.total}</div>
-                    <div className="stat-label">Total Contests</div>
-                </div>
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{contests.pending}</div>
-                    <div className="stat-label">Pending Contests</div>
-                </div>
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{contests.rejected}</div>
-                    <div className="stat-label">Rejected Contests</div>
-                </div>
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{contests.upcoming}</div>
-                    <div className="stat-label">Upcoming Contests</div>
-                </div>
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{contests.ongoing}</div>
-                    <div className="stat-label">Ongoing Contests</div>
-                </div>
-                <div className="card glass hover-lift">
-                    <div className="stat-value">{contests.completed}</div>
-                    <div className="stat-label">Completed Contests</div>
-                </div>
-
-            </div>
+      <div className="summary-section">
+        <h3 className="section-title">👥 Users</h3>
+        <div className="summary-stats-grid">
+          <StatCard value={users.userTotal} label="Total Users" />
+          <StatCard value={users.adminTotal} label="Total Admins" />
         </div>
-    );
+      </div>
+
+      <div className="summary-section">
+        <h3 className="section-title">📚 Problems</h3>
+        <div className="summary-stats-grid">
+          <StatCard value={problems.total} label="Total Problems" />
+          <StatCard value={problems.pending} label="Pending Problems" />
+          <StatCard value={problems.approved} label="Approved Problems" />
+          <StatCard value={problems.rejected} label="Rejected Problems" />
+        </div>
+      </div>
+
+      <div className="summary-section">
+        <h3 className="section-title">📤 Submissions</h3>
+        <div className="summary-stats-grid">
+          <StatCard value={submissions.total} label="Total Submissions" />
+          <StatCard value={submissions.pending} label="Pending Submissions" />
+          <StatCard value={submissions.accepted} label="Accepted Submissions" />
+          <StatCard value={submissions.wrong} label="Wrong Submissions" />
+          <StatCard value={submissions.runtime} label="Run Time Error Submissions" />
+          <StatCard value={submissions.timelimit} label="Time Limit Exceeded Submissions" />
+        </div>
+      </div>
+
+      <div className="summary-section">
+        <h3 className="section-title">🏆 Contests</h3>
+        <div className="summary-stats-grid">
+          <StatCard value={contests.total} label="Total Contests" />
+          <StatCard value={contests.pending} label="Pending Contests" />
+          <StatCard value={contests.rejected} label="Rejected Contests" />
+          <StatCard value={contests.upcoming} label="Upcoming Contests" />
+          <StatCard value={contests.ongoing} label="Ongoing Contests" />
+          <StatCard value={contests.completed} label="Completed Contests" />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default AdminSummary;

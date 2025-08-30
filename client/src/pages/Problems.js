@@ -263,6 +263,7 @@ function ProblemPopover({ problem, anchorRect, openMode, onClose, onPointerEnter
             </span>
           ))}
         </div>
+        <span className="badge code">Submissions: {problem.submissions}</span>
         <div className="popover-actions">
           <Link to={`/problems/${problem._id || problem.id}`} className="btn small primary">
             Open problem →

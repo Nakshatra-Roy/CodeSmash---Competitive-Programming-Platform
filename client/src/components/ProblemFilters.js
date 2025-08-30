@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/authContext";
 
 const ProblemFilters = ({ onFilterChange, allDifficulties = [], allTags = [], filters }) => {
   const [search, setSearch] = useState(filters?.search || "");
@@ -7,6 +8,7 @@ const ProblemFilters = ({ onFilterChange, allDifficulties = [], allTags = [], fi
   const [tag, setTag] = useState(filters?.tag || "");
   const [searchFocused, setSearchFocused] = useState(false);
   const [dropdownFocus, setDropdownFocus] = useState(null);
+  const { user } = useAuth();
 
   const handleChange = (key, value) => {
     const newFilters = {
@@ -107,9 +109,11 @@ const ProblemFilters = ({ onFilterChange, allDifficulties = [], allTags = [], fi
       <button onClick={handleReset} className="btn glossy primary">
         Reset Filters
       </button>
+      {user && (
       <button onClick={handleMyProblems} className="btn glossy primary">
         My Problems
       </button>
+      )}
     </div>
   );
 };

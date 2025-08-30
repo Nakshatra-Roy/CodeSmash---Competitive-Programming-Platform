@@ -1,6 +1,7 @@
 // client/src/components/ContestFilters.js
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/authContext";
 
 const ContestFilters = ({ onFilterChange, allTags = [], allOrganizers = [] }) => {
   const [search, setSearch] = useState("");
@@ -9,6 +10,7 @@ const ContestFilters = ({ onFilterChange, allTags = [], allOrganizers = [] }) =>
   const [startDate, setStartDate] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [dropdownFocus, setDropdownFocus] = useState(null);
+  const { user } = useAuth();
 
   const handleChange = (key, value) => {
     const newFilters = {
@@ -119,10 +121,11 @@ const ContestFilters = ({ onFilterChange, allTags = [], allOrganizers = [] }) =>
       <button onClick={handleReset} className="btn glossy primary">
         Reset Filters
       </button>
-        
+        {user && (
       <button onClick={handleMyContests} className="btn glossy primary">
         My Contests
       </button>
+        )}
     </div>
   );
 };

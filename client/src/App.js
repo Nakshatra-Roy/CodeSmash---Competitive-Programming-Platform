@@ -17,6 +17,7 @@ import SubmissionView from "./pages/SubmissionView";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import PublicProfile from "./pages/PublicProfile";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminContests from "./pages/AdminContests";
 import AdminProblems from "./pages/AdminProblems";
@@ -39,6 +40,7 @@ function AppContent() {
           <Route path="/problems/:id" element={<ProblemView />} />
           <Route path="/submissions" element={<Submissions />} />
           <Route path="/submissions/:id" element={<SubmissionView />} />
+          <Route path="/users/:id" element={<PublicProfile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />

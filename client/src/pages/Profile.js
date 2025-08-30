@@ -21,7 +21,7 @@ export default function Profile() {
     if (user) {
       setFormData(user);
     } else {
-      loadUser().catch(() => navigate("/login"));
+      navigate("/login");
     }
   }, [user, loadUser, navigate]);
 

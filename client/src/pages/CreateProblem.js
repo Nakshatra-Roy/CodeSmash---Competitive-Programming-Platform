@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from '../context/authContext';
 import axios from "axios";
 import toast, { Toaster } from 'react-hot-toast';
@@ -62,7 +62,7 @@ const CreateProblem = () => {
         },
         { withCredentials: true }
       );
-      show("success", "Problem created successfully!");
+      show("success", "Problem created successfully! Awaiting admin approval.");
       setNewProblem({
         title: "",
         description: "",
@@ -110,6 +110,7 @@ const CreateProblem = () => {
         <div className="container">
           <div className="section-head">
             <h2>Create New Problem</h2>
+            <Link to="/problems" className="btn tiny ghost">← All Problems</Link>
           </div>
 
           {notice && (
@@ -120,10 +121,12 @@ const CreateProblem = () => {
             <form onSubmit={handleAddProblem} className="offer-form">
               <div className="form-shell">
                 <div className="field">
+                <p>All fields are required.</p>
+                <br/>
                   <label className="label">Title</label>
                   <input
                     className="input glass-input"
-                    placeholder="Problem title"
+                    placeholder="Choose an unique title!"
                     value={newProblem.title}
                     onChange={(e) => onChange("title", e.target.value)}
                   />
@@ -133,7 +136,7 @@ const CreateProblem = () => {
                   <label className="label">Description</label>
                   <textarea
                     className="input glass-input textarea"
-                    placeholder="Describe the problem"
+                    placeholder="Describe the problem in details. Include examples."
                     value={newProblem.description}
                     onChange={(e) => onChange("description", e.target.value)}
                   />
@@ -156,7 +159,7 @@ const CreateProblem = () => {
                   <label className="label">Tags (comma separated)</label>
                   <input
                     className="input glass-input"
-                    placeholder="e.g., arrays, dp, sorting"
+                    placeholder="e.g., arrays, dp, bfs, dfs"
                     value={newProblem.tags.join(", ")}
                     onChange={(e) =>
                       onChange(
@@ -171,7 +174,7 @@ const CreateProblem = () => {
                   <label className="label">Constraints (comma separated)</label>
                   <input
                     className="input glass-input"
-                    placeholder="e.g., 1 ≤ N ≤ 1000"
+                    placeholder="e.g., 1 ≤ N ≤ 1000, 1s"
                     value={newProblem.constraints.join(", ")}
                     onChange={(e) =>
                       onChange(
@@ -183,10 +186,16 @@ const CreateProblem = () => {
                 </div>
 
                 <div className="field">
-                  <label className="label">Examples (comma separated)</label>
-                  <input
-                    className="input glass-input"
-                    placeholder="e.g., Input: 1 2 Output: 3"
+                  <label className="label">Sample Input/Output (comma separated)</label>
+                  <textarea
+                    className="input glass-input textarea"
+                    placeholder="e.g.
+                    Input:
+                    1 2
+                    3 4
+                    Output:
+                    9 10
+                    11 12"
                     value={newProblem.examples.join(", ")}
                     onChange={(e) =>
                       onChange(

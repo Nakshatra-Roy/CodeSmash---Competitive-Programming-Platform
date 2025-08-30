@@ -9,6 +9,7 @@ const problemSchema = new mongoose.Schema({
   constraints: [{type: String, required: true}],
   examples: [{type: String, required: true}],
   status: { type: String, enum: ['Approved', 'Pending', 'Rejected'], default: 'Pending' },
+  submissions: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
 });
 

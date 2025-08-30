@@ -16,6 +16,9 @@ export const getStats = asyncHandler(async (req, res) => {
     const totalSubmissions = await Submission.countDocuments();
     const totalPendingSubmissions = await Submission.countDocuments({ verdict: 'Pending' });
     const totalAcceptedSubmissions = await Submission.countDocuments({ verdict: 'Accepted' });
+    const totalWrongSubmissions = await Submission.countDocuments({ verdict: 'Wrong' });
+    const totalRuntimeErrorSubmissions = await Submission.countDocuments({ verdict: 'Runtime Error' });
+    const totalTimeLimitExceededSubmissions = await Submission.countDocuments({ verdict: 'Time Limit Exceeded' });
 
     const totalContests = await Contest.countDocuments();
     const totalPendingContests = await Contest.countDocuments({ status: 'Pending' });
@@ -39,6 +42,9 @@ export const getStats = asyncHandler(async (req, res) => {
             total: totalSubmissions,
             pending: totalPendingSubmissions,
             accepted: totalAcceptedSubmissions,
+            wrong: totalWrongSubmissions,
+            runtime: totalRuntimeErrorSubmissions,
+            timelimit: totalTimeLimitExceededSubmissions,
         },
         contests: {
             total: totalContests,

@@ -99,7 +99,7 @@ const Navbar = () => {
             </NavLink>
             </>
             )}
-            {isLoggedIn && (
+            {!isLoggedInAdmin && (
             <>
             <NavLink to="/contests" active={isActive("/contests")}>
               🏆 Contests

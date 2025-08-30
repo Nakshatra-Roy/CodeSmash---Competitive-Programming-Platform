@@ -40,26 +40,38 @@ function useFetch(url, initial = []) {
 
 function Landing() {
   const { data: problems, loading: loadingProblems } = useFetch(
-  "https://localhost:5000" ? `/api/problems?sort=-createdAt&limit=5` : null,
+  "https://localhost:5000" ? `/api/problems` : null,
   []
 );
 
   const { data: board, loading: loadingBoard } = useFetch(
-    "https://localhost:5000" ? `/api/leaderboard/global?limit=8` : null,
+    "/api/users",
     []
   );
 
   const topProblems = useMemo(() => {
-  const arr = Array.isArray(problems) ? problems : [];
-  return [...arr]
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, 5);
-}, [problems]);
+    const arr = Array.isArray(problems) ? problems : [];
+    return [...arr]
+      .sort((a, b) => {
+        const diff = (b.submissions || 0) - (a.submissions || 0);
+        return diff !== 0 ? diff : new Date(b.createdAt) - new Date(a.createdAt);
+      })
+      .slice(0, 6);
+  }, [problems]);
 
 
   const topBoard = useMemo(() => {
-    const arr = Array.isArray(board) ? board : [];
-    return arr.slice(0, 8);
+    if (!Array.isArray(board)) return [];
+    const filtered = board.filter(u => u.role !== "admin");
+    filtered.forEach(u => {
+      u.score = u.score ?? (
+        (u.contests?.length || 0) +
+        (u.contestEnroll?.length || 0) +
+        (u.problems?.length || 0) +
+        (u.submissions?.length || 0)
+      );
+    });
+    return filtered.sort((a, b) => b.score - a.score).slice(0, 8);
   }, [board]);
 
   return (
@@ -127,6 +139,8 @@ function Landing() {
                     <span className="tag" key={j}>#{t}</span>
                   ))}
                 </p>
+                <br/>
+                <span className="badge code">Submissions: {p?.submissions}</span>
               </Link>
             ))}
           </div>
@@ -142,21 +156,37 @@ function Landing() {
           </div>
           <div className="card glass">
             <div className="table">
-              <div className="row head">
+              <div className="row leaderboard head">
                 <div>#</div>
-                <div>User</div>
+                <div>Username</div>
+                <div>Contests Hosted</div>
+                <div>Contests Enrolled</div>
+                <div>Problems Written</div>
+                <div>Problems Solved</div>
                 <div>Score</div>
-                <div>Penalties</div>
               </div>
               {(loadingBoard ? Array.from({ length: 8 }) : topBoard).map((r, i) => (
-                <div className={`row ${loadingBoard ? "skeleton" : ""}`} key={r?.userId || r?.handle || i}>
+                <div className={`row leaderboard ${loadingBoard ? "skeleton" : ""}`} key={r?.userId || r?.handle || i}>
                   <div>{i + 1}</div>
-                  <div className="user">
-                    <div className="avatar">{(r?.handle || "U")[0]?.toUpperCase()}</div>
+                  <a
+                  href={`/users/${r?._id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn tiny ghost"
+                  style={{
+                    padding: "4px 12px",
+                    fontSize: "1rem",
+                    textAlign: "left",
+                    justifyContent: "flex-start",
+                  }}
+                >
                     <span>{r?.handle || r?.username || "Loading…"}</span>
-                  </div>
-                  <div>{r?.score ?? r?.points ?? "—"}</div>
-                  <div>{r?.penalties ?? r?.penalty ?? "—"}</div>
+                  </a>
+                  <div>{r?.contests.length ?? "—"}</div>
+                  <div>{r?.contestEnroll.length ?? "—"}</div>
+                  <div>{r?.problems.length ?? "—"}</div>
+                  <div>{r?.submissions.length ?? "—"}</div>
+                  <div>{r?.score ?? "—"}</div>
                 </div>
               ))}
             </div>
