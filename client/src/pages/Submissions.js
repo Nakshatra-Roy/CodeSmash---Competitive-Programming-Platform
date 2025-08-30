@@ -185,9 +185,7 @@ const Submissions = () => {
                     <span className="tag">⏱ Time: {s.time || "N/A"}ms</span>
                     <span className="tag">💾 Memory: {s.memory || "N/A"}KB</span>
                   </p>
-                  
                   <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                    <button className="btn tiny glossy ghost">🛠️ Rejudge</button>
                     <button className="btn tiny glossy ghost" onClick={() => navigate(`/submissions/${s.id || s._id}`)}>
                       📊 Report
                     </button>

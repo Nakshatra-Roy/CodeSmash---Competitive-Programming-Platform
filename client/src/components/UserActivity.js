@@ -137,7 +137,6 @@ export default function UserActivity({ userId }) {
             </p>
 
             <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                <button className="btn tiny glossy ghost">🛠️ Rejudge</button>
                 <Link to={`/submissions/${s._id || s.id}`} className="btn tiny glossy ghost">
                 📊 Report
                 </Link>
